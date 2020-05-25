@@ -31,17 +31,39 @@ export default class App extends React.Component {
       })
   }
 
+  // handleSearchForm(e) {
+  //   fetch('https://my-json-server.typicode.com/andreypost/db/posts')
+  //     .then(response => response.json())
+  //     .then(json => {
+  //       let arr = []
+  //       for (let key of json) {
+  //         if (key.username.toLowerCase() === this.state.searchName.toLowerCase()) arr.push(key)
+  //       }
+  //       this.handleChangeState(arr, '', '')
+  //     })
+  //   e.preventDefault()
+  // }
+
   handleSearchForm(e) {
-    fetch('https://my-json-server.typicode.com/andreypost/db/posts')
-      .then(response => response.json())
-      .then(json => {
-        let arr = []
-        for (let key of json) {
-          if (key.username.toLowerCase() === this.state.searchName.toLowerCase()) arr.push(key)
-        }
-        this.handleChangeState(arr, '', '')
-      })
+    this.setState({ searchName: '', })
+    clearInterval(this.timerId)
     e.preventDefault()
+  }
+
+  searchInput() {
+    const oninputSearch = () => {
+      fetch('https://my-json-server.typicode.com/andreypost/db/posts')
+        .then(response => response.json())
+        .then(json => {
+          let arr = []
+          for (let key of json) {
+            if (key.username.toLowerCase() === this.state.searchName.toLowerCase()) arr.push(key)
+          }
+          this.handleChangeState(arr, this.state.searchName, '')
+        })
+    }
+    oninputSearch()
+    this.timerId = setTimeout(() => oninputSearch(), 250)
   }
 
   handleSubmitRegister(e) {
@@ -127,7 +149,7 @@ export default class App extends React.Component {
           <form id="searchByUserName" onSubmit={this.handleSearchForm} className="flexjustbet wrap">
             <button form="searchByUserName">SEARCH USER BY NAME</button>
             <input type="search"
-              name="search" onChange={(e) => this.handleChangeState([], e.target.value)} required="username" value={this.state.searchName} autoComplete="off" placeholder="enter username" />
+              name="search" onInput={() => this.searchInput()} onChange={(e) => this.handleChangeState([], e.target.value)} required="username" value={this.state.searchName} autoComplete="off" placeholder="enter username" />
           </form>
           <form id="registerUser" onSubmit={(e) => this.handleSubmitRegister(e)} className="flexjustcenter wrap">
             <button form="registerUser">REGISTER</button>
